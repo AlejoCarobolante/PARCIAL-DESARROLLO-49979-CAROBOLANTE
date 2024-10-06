@@ -1,18 +1,22 @@
 package com.example.ParcialDesarrollo;
 
+import Entities.MatrizADN;
+import Services.MatrizADNService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.util.Scanner;
 
-import static Entities.MatrizADN.isMutant;
+import static Services.MatrizADNService.isMutant;
 
+@EntityScan(basePackages = "Entities")
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.example.ParcialDesarrolloApplication", "repositories", "services"})
 public class ParcialDesarrolloApplication {
 
 	public static void main(String[] args) {
+		SpringApplication.run(ParcialDesarrolloApplication.class, args);
+
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.print("Ingrese el tamaño de la matriz NxN (n): ");
@@ -37,5 +41,5 @@ public class ParcialDesarrolloApplication {
 
 		scanner.close();
 	}
-
 }
+

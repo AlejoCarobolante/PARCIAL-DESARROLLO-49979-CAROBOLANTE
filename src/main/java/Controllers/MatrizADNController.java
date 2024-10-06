@@ -26,15 +26,6 @@ public class MatrizADNController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@PathVariable Long idADN){
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(matrizADNService.findByID(idADN));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error. Por favor intente mas tarde.\"}");
-        }
-    }
-
     @PostMapping("")
     public ResponseEntity<?> save(@RequestBody MatrizADN entity){
         try {
@@ -46,7 +37,7 @@ public class MatrizADNController {
 
     @PostMapping("/mutant/")
     public ResponseEntity<String> isMutant(@RequestBody SolicitudADN solicitudADN) {
-        boolean isMutant = MatrizADN.isMutant(solicitudADN.getAdn());
+        boolean isMutant = MatrizADNService.isMutant(solicitudADN.getAdn());
         if (isMutant) {
             return new ResponseEntity<>("Mutante detectado", HttpStatus.OK);
         } else {

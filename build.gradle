@@ -36,11 +36,17 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"// json
 	implementation 'org.json:json:20210307'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
+test {
+	useJUnitPlatform()
+}
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.jar{
+	enabled = true
 }
