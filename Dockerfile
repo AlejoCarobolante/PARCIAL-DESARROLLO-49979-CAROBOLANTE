@@ -4,7 +4,7 @@ FROM openjdk:17-jdk-alpine
 # Configurar el directorio de trabajo
 WORKDIR /app
 
-# Copiar el wrapper de Gradle y los archivos necesarios
+# Copiar el archivo gradlew y el directorio gradle
 COPY gradlew ./
 COPY gradle ./gradle
 
@@ -12,17 +12,15 @@ COPY gradle ./gradle
 RUN chmod +x gradlew
 
 # Copiar el resto de los archivos del proyecto
-COPY build/libs/*.jar /app/api-parcial.jar
-
-# Comprobar los permisos y la presencia de gradlew (opcional, para depuración)
-RUN ls -la
+COPY . .
 
 # Construir el proyecto usando Gradle
 RUN ./gradlew build
 
-#Exponer el puerto 8080
-EXPOSE 8080
+# Copiar el archivo JAR generado al directorio de la aplicación
+COPY build/libs/*.jar /app/api-parcial.jar
 
-# Comando para ejecutar tu aplicación (ajusta según tu configuración)
-ENTRYPOINT ["sh", "./gradlew", "build"]
+# Comando para ejecutar tu aplicación
+CMD ["java", "-jar", "/app/api-parcial.jar"]
+
 
