@@ -1,14 +1,21 @@
+# Usa una imagen base de OpenJDK
 FROM openjdk:17-jdk-alpine
+
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia el código fuente al contenedor
-COPY . /app
+# Copia el archivo gradlew y gradlew.bat
+COPY gradlew ./
+COPY gradle ./gradle
+
+# Cambia los permisos para permitir la ejecución
+RUN chmod +x gradlew
+
+# Copia el resto de la aplicación
+COPY . .
 
 # Ejecuta Gradle para construir el JAR dentro del contenedor
 RUN ./gradlew build
-
-# Verifica que el archivo JAR fue creado correctamente
-RUN ls -l build/libs/
 
 # Copia el archivo JAR generado al directorio de trabajo
 COPY build/libs/*.jar /app/api-parcial.jar
@@ -17,4 +24,5 @@ COPY build/libs/*.jar /app/api-parcial.jar
 EXPOSE 8080
 
 # Comando para ejecutar la aplicación
-CMD ["java", "-jar", "/app/api-parcial.jar"]
+CMD ["java", "-jar", "api-parcial.jar"]
+
