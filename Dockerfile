@@ -1,28 +1,28 @@
-# Usa una imagen base de OpenJDK
+# Usar OpenJDK 17 como base
 FROM openjdk:17-jdk-alpine
 
-# Establece el directorio de trabajo
+# Configurar el directorio de trabajo
 WORKDIR /app
 
-# Copia el archivo gradlew y gradlew.bat
+# Copiar el wrapper de Gradle y los archivos necesarios
 COPY gradlew ./
 COPY gradle ./gradle
 
-# Cambia los permisos para permitir la ejecución
+# Establecer permisos de ejecución para el wrapper de Gradle
 RUN chmod +x gradlew
 
-# Copia el resto de la aplicación
-COPY . .
-
-# Ejecuta Gradle para construir el JAR dentro del contenedor
-RUN ./gradlew build
-
-# Copia el archivo JAR generado al directorio de trabajo
+# Copiar el resto de los archivos del proyecto
 COPY build/libs/*.jar /app/api-parcial.jar
 
-# Exponer el puerto 8080
+# Comprobar los permisos y la presencia de gradlew (opcional, para depuración)
+RUN ls -la
+
+# Construir el proyecto usando Gradle
+RUN ./gradlew build
+
+#Exponer el puerto 8080
 EXPOSE 8080
 
-# Comando para ejecutar la aplicación
-CMD ["java", "-jar", "api-parcial.jar"]
+# Comando para ejecutar tu aplicación (ajusta según tu configuración)
+ENTRYPOINT ["sh", "./gradlew", "build"]
 
