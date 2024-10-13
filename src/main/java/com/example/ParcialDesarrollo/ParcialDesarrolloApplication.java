@@ -1,27 +1,30 @@
 package com.example.ParcialDesarrollo;
 
-import Entities.MatrizADN;
 import Services.MatrizADNService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import java.util.Scanner;
 
-import static Services.MatrizADNService.isMutant;
-
 @EntityScan(basePackages = "Entities")
+@ComponentScan(basePackages = {"Services", "Repositories", "Entities"})
+@EnableJpaRepositories(basePackages = "Repositories")
 @SpringBootApplication
 public class ParcialDesarrolloApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ParcialDesarrolloApplication.class, args);
+		ApplicationContext context = SpringApplication.run(ParcialDesarrolloApplication.class, args);
+
+		MatrizADNService matrizADNService = context.getBean(MatrizADNService.class);
 
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.print("Ingrese el tamaño de la matriz NxN (n): ");
 		int n = scanner.nextInt();
-		scanner.nextLine(); // Consumir el salto de línea después de nextInt()
+		scanner.nextLine();
 
 		String[] dna = new String[n];
 		System.out.println("Ingrese " + n + " filas de ADN (cada fila debe tener " + n + " caracteres):");
@@ -30,16 +33,24 @@ public class ParcialDesarrolloApplication {
 			String input = scanner.nextLine();
 			if (input.length() != n || !input.matches("[ATCG]+")) {
 				System.out.println("Entrada inválida. La fila debe tener " + n + " caracteres y solo contener A, T, C, G.");
-				i--; // Retroceder el contador para que el usuario pueda intentar nuevamente
+				i--;
 			} else {
 				dna[i] = input;
 			}
 		}
 
-		boolean isMutant = isMutant(dna);
-		System.out.println("¿Es mutante? " + isMutant);
+		try {
+			boolean esMutante = matrizADNService.guardarADN(dna);
+			System.out.println("Secuencia de ADN guardada en la base de datos.");
+			if (esMutante) {
+				System.out.println("La secuencia de ADN es mutante.");
+			} else {
+				System.out.println("La secuencia de ADN NO es mutante.");
+			}
+		} catch (Exception e) {
+			System.out.println("Ocurrió un error al guardar la secuencia de ADN.");
+		}
 
 		scanner.close();
 	}
 }
-

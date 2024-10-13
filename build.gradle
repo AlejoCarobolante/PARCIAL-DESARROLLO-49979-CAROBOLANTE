@@ -39,14 +39,13 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
+	test {
+		useJUnitPlatform()
+	}
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
 
-test {
-	useJUnitPlatform()
-}
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-tasks.jar{
-	enabled = true
-}
+	tasks.jar {
+		enabled = true
+	}

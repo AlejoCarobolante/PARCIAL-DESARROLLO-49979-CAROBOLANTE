@@ -1,4 +1,5 @@
 package Services;
+
 import Entities.MatrizADN;
 import Repositories.MatrizADNRepository;
 import jakarta.transaction.Transactional;
@@ -35,15 +36,20 @@ public class MatrizADNService {
             throw new Exception(e.getMessage());
         }
     }
+
     @Transactional
-    public MatrizADN guardarADN(String[] dna) throws Exception {
+    public Boolean guardarADN(String[] dna) throws Exception {
         boolean isMutant = isMutant(dna);
 
-        MatrizADN matrizADN = MatrizADN.builder()
-                .esmutante(isMutant)                             // Indicar si es mutante
-                .secuenciaValida(String.join(",", dna))           // Unir la secuencia ADN en un String
-                .build();
-        return save(matrizADN);
+        if (isMutant) {
+            MatrizADN matrizADN = MatrizADN.builder()
+                    .esmutante(true)                              // Indicar que es mutante
+                    .secuenciaValida(String.join(",", dna))       // Unir la secuencia ADN en un String
+                    .build();
+            matrizADNRepository.save(matrizADN);
+        }
+        // Si no es mutante, no guarda en la base de datos
+        return isMutant;
     }
 
     public static boolean isMutant(String[] dna) {
@@ -65,31 +71,39 @@ public class MatrizADNService {
         }
 
         // Verificar secuencias diagonales (de izquierda a derecha)
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n - 3; i++) {  // Ajuste para no procesar menos de 4 caracteres
             StringBuilder diagonal = new StringBuilder();
             for (int j = 0; j < n - i; j++) {
-                diagonal.append(dna[j + i].charAt(j));
+                if (i + j < n && j < n) {
+                    diagonal.append(dna[i + j].charAt(j));
+                }
             }
             count += countSequences(diagonal.toString());
 
             diagonal = new StringBuilder();
             for (int j = 0; j < n - i; j++) {
-                diagonal.append(dna[j].charAt(j + i));
+                if (j < n && j + i < n) {
+                    diagonal.append(dna[j].charAt(j + i));
+                }
             }
             count += countSequences(diagonal.toString());
         }
 
         // Verificar secuencias diagonales (de derecha a izquierda)
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n - 3; i++) {  // Ajuste para no procesar menos de 4 caracteres
             StringBuilder diagonal = new StringBuilder();
             for (int j = 0; j < n - i; j++) {
-                diagonal.append(dna[j + i].charAt(n - j - 1));
+                if (i + j < n && (n - j - 1) >= 0) {
+                    diagonal.append(dna[i + j].charAt(n - j - 1));
+                }
             }
             count += countSequences(diagonal.toString());
 
             diagonal = new StringBuilder();
             for (int j = 0; j < n - i; j++) {
-                diagonal.append(dna[j].charAt(n - j - 1 - i));
+                if ((n - j - 1 - i) >= 0 && j < n) {
+                    diagonal.append(dna[j].charAt(n - j - 1 - i));
+                }
             }
             count += countSequences(diagonal.toString());
         }
@@ -97,7 +111,6 @@ public class MatrizADNService {
         return count > 1;
     }
 
-    @Transactional
     private static int countSequences(String sequence) {
         int count = 0;
         for (int i = 0; i < sequence.length() - 3; i++) {
