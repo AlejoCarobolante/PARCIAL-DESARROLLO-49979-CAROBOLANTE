@@ -4,12 +4,13 @@ FROM openjdk:17-jdk-alpine
 # Configurar el directorio de trabajo
 WORKDIR /app
 
-# Copiar el archivo gradlew y el directorio gradle
+# Copiar el archivo gradlew
 COPY gradlew ./
-COPY gradle ./gradle
-
 # Establecer permisos de ejecución para el wrapper de Gradle
 RUN chmod +x gradlew
+
+# Copiar el directorio gradle
+COPY gradle ./gradle
 
 # Copiar el resto de los archivos del proyecto
 COPY . .
@@ -22,5 +23,6 @@ COPY build/libs/*.jar /app/api-parcial.jar
 
 # Comando para ejecutar tu aplicación
 CMD ["java", "-jar", "/app/api-parcial.jar"]
+
 
 
