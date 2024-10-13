@@ -56,70 +56,53 @@ public class MatrizADNService {
         int n = dna.length;
         int count = 0;
 
-        // Verificar secuencias horizontales
-        for (String row : dna) {
-            count += countSequences(row);
-        }
+        // Verificar secuencias en todas las direcciones (horizontal, vertical y diagonal)
+        for (int i = 0; i < n; i++) {
+            StringBuilder vertical = new StringBuilder();
 
-        // Verificar secuencias verticales
-        for (int col = 0; col < n; col++) {
-            StringBuilder column = new StringBuilder();
-            for (String row : dna) {
-                column.append(row.charAt(col));
-            }
-            count += countSequences(column.toString());
-        }
+            for (int j = 0; j < n; j++) {
+                // Verificar secuencias horizontales
+                count += countSequences(dna[i]);
+                if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
 
-        // Verificar secuencias diagonales (de izquierda a derecha)
-        for (int i = 0; i < n - 3; i++) {  // Ajuste para no procesar menos de 4 caracteres
-            StringBuilder diagonal = new StringBuilder();
-            for (int j = 0; j < n - i; j++) {
-                if (i + j < n && j < n) {
-                    diagonal.append(dna[i + j].charAt(j));
+                // Verificar secuencias verticales
+                vertical.append(dna[j].charAt(i));
+                count += countSequences(vertical.toString());
+                if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
+
+                // Verificar diagonales (de izquierda a derecha)
+                if (i + j < n) {
+                    String diagonal1 = (i > 0 && j > 0) ? dna[i - 1].charAt(j - 1) + "" : "";
+                    count += countSequences(diagonal1 + dna[i].charAt(j));
+                    if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
+
+                    // Verificar diagonales (de derecha a izquierda)
+                    String diagonal2 = (i > 0 && j < n - 1) ? dna[i - 1].charAt(n - j) + "" : "";
+                    count += countSequences(diagonal2 + dna[i].charAt(n - 1 - j));
+                    if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
                 }
             }
-            count += countSequences(diagonal.toString());
-
-            diagonal = new StringBuilder();
-            for (int j = 0; j < n - i; j++) {
-                if (j < n && j + i < n) {
-                    diagonal.append(dna[j].charAt(j + i));
-                }
-            }
-            count += countSequences(diagonal.toString());
         }
 
-        // Verificar secuencias diagonales (de derecha a izquierda)
-        for (int i = 0; i < n - 3; i++) {  // Ajuste para no procesar menos de 4 caracteres
-            StringBuilder diagonal = new StringBuilder();
-            for (int j = 0; j < n - i; j++) {
-                if (i + j < n && (n - j - 1) >= 0) {
-                    diagonal.append(dna[i + j].charAt(n - j - 1));
-                }
-            }
-            count += countSequences(diagonal.toString());
-
-            diagonal = new StringBuilder();
-            for (int j = 0; j < n - i; j++) {
-                if ((n - j - 1 - i) >= 0 && j < n) {
-                    diagonal.append(dna[j].charAt(n - j - 1 - i));
-                }
-            }
-            count += countSequences(diagonal.toString());
-        }
-
-        return count > 1;
+        return count >= 2; // Verificar si encontramos 2 o más secuencias
     }
 
+    // METODO PARA CONTAR LAS SECUENCIAS DE 4 LETRAS IGUALES
     private static int countSequences(String sequence) {
         int count = 0;
-        for (int i = 0; i < sequence.length() - 3; i++) {
-            if (sequence.charAt(i) == sequence.charAt(i + 1) &&
-                    sequence.charAt(i) == sequence.charAt(i + 2) &&
-                    sequence.charAt(i) == sequence.charAt(i + 3)) {
-                count++;
+        int currentCount = 1;
+
+        for (int i = 1; i < sequence.length(); i++) {
+            if (sequence.charAt(i) == sequence.charAt(i - 1)) {
+                currentCount++;
+                if (currentCount == 4) {
+                    count++;
+                }
+            } else {
+                currentCount = 1;
             }
         }
         return count;
     }
+
 }

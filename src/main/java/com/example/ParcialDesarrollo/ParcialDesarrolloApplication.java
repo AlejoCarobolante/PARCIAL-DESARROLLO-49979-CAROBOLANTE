@@ -44,11 +44,9 @@ public class ParcialDesarrolloApplication {
 			System.out.println("Secuencia de ADN guardada en la base de datos.");
 			if (esMutante) {
 				System.out.println("La secuencia de ADN es mutante.");
-			} else {
-				System.out.println("La secuencia de ADN NO es mutante.");
 			}
 		} catch (Exception e) {
-			System.out.println("Ocurrió un error al guardar la secuencia de ADN.");
+			System.out.println("La secuencia de ADN no es mutante.");
 		}
 
 		scanner.close();
