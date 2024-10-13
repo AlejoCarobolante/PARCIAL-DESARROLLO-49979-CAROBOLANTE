@@ -4,11 +4,14 @@ WORKDIR /app
 # Copia el código fuente al contenedor
 COPY . /app
 
-# Ejecuta Maven para construir el JAR dentro del contenedor
-RUN ./mvnw clean package
+# Ejecuta Gradle para construir el JAR dentro del contenedor
+RUN ./gradlew build
+
+# Verifica que el archivo JAR fue creado correctamente
+RUN ls -l build/libs/
 
 # Copia el archivo JAR generado al directorio de trabajo
-COPY target/ParcialDesarrollo-0.0.1-SNAPSHOT.jar /app/api-parcial.jar
+COPY build/libs/ParcialDesarrollo-0.0.1-SNAPSHOT.jar /app/api-parcial.jar
 
 # Exponer el puerto 8080
 EXPOSE 8080
