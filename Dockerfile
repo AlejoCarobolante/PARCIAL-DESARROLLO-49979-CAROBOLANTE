@@ -11,7 +11,7 @@ RUN ./gradlew build
 RUN ls -l build/libs/
 
 # Copia el archivo JAR generado al directorio de trabajo
-COPY build/libs/ParcialDesarrollo-0.0.1-SNAPSHOT.jar /app/api-parcial.jar
+COPY build/libs/*.jar /app/api-parcial.jar
 
 # Exponer el puerto 8080
 EXPOSE 8080
