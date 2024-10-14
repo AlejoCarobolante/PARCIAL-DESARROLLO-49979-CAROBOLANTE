@@ -1,28 +1,17 @@
-# Usar OpenJDK 17 como base
-FROM openjdk:17-jdk-alpine
+FROM alpine:latest as build
 
-# Configurar el directorio de trabajo
-WORKDIR /app
+RUN apk update
+RUN apk add openjdk17
 
-# Copiar el archivo gradlew
-COPY gradlew ./
-# Establecer permisos de ejecución para el wrapper de Gradle
-RUN chmod +x gradlew
-
-# Copiar el directorio gradle
-COPY gradle ./gradle
-
-# Copiar el resto de los archivos del proyecto
 COPY . .
+RUN chmod +x ./gradlew
+RUN ./gradlew bootJar --no-daemon
 
-# Construir el proyecto usando Gradle
-RUN ./gradlew build
+FROM openjdk:17-alpine
+EXPOSE 9000
+COPY --from=build ./build/libs/*.jar ./app.jar
 
-# Copiar el archivo JAR generado al directorio de la aplicación
-COPY build/libs/*.jar /app/api-parcial.jar
-
-# Comando para ejecutar tu aplicación
-CMD ["java", "-jar", "/app/api-parcial.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
 
 
