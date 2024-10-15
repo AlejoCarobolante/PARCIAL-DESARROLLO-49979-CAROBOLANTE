@@ -46,7 +46,8 @@ public class ParcialDesarrolloApplication {
 				System.out.println("La secuencia de ADN es mutante.");
 			}
 		} catch (Exception e) {
-			System.out.println("La secuencia de ADN no es mutante.");
+			System.out.println("No fue posible guardar la secuencia en la base de datos.");
+			e.printStackTrace();
 		}
 
 		scanner.close();

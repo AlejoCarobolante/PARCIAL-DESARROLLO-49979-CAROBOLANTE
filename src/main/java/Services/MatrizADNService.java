@@ -56,34 +56,44 @@ public class MatrizADNService {
         int n = dna.length;
         int count = 0;
 
-        // Verificar secuencias en todas las direcciones (horizontal, vertical y diagonal)
-        for (int i = 0; i < n; i++) {
-            StringBuilder vertical = new StringBuilder();
-
-            for (int j = 0; j < n; j++) {
-                // Verificar secuencias horizontales
-                count += countSequences(dna[i]);
-                if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
-
-                // Verificar secuencias verticales
-                vertical.append(dna[j].charAt(i));
-                count += countSequences(vertical.toString());
-                if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
-
-                // Verificar diagonales (de izquierda a derecha)
-                if (i + j < n) {
-                    String diagonal1 = (i > 0 && j > 0) ? dna[i - 1].charAt(j - 1) + "" : "";
-                    count += countSequences(diagonal1 + dna[i].charAt(j));
-                    if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
-
-                    // Verificar diagonales (de derecha a izquierda)
-                    String diagonal2 = (i > 0 && j < n - 1) ? dna[i - 1].charAt(n - j) + "" : "";
-                    count += countSequences(diagonal2 + dna[i].charAt(n - 1 - j));
-                    if (count >= 2) return true; // Si encontramos 2, retornamos verdadero
-                }
-            }
+        // Verificar secuencias horizontales
+        for (String row : dna) {
+            count += countSequences(row);
         }
-
+        // Verificar secuencias verticales
+        for (int col = 0; col < n; col++) {
+            StringBuilder column = new StringBuilder();
+            for (String row : dna) {
+                column.append(row.charAt(col));
+            }
+            count += countSequences(column.toString());
+        }
+        // Verificar secuencias diagonales (de izquierda a derecha)
+        for (int i = 0; i < n; i++) {
+            StringBuilder diagonal = new StringBuilder();
+            for (int j = 0; j < n - i; j++) {
+                diagonal.append(dna[j + i].charAt(j));
+            }
+            count += countSequences(diagonal.toString());
+            diagonal = new StringBuilder();
+            for (int j = 0; j < n - i; j++) {
+                diagonal.append(dna[j].charAt(j + i));
+            }
+            count += countSequences(diagonal.toString());
+        }
+        // Verificar secuencias diagonales (de derecha a izquierda)
+        for (int i = 0; i < n; i++) {
+            StringBuilder diagonal = new StringBuilder();
+            for (int j = 0; j < n - i; j++) {
+                diagonal.append(dna[j + i].charAt(n - j - 1));
+            }
+            count += countSequences(diagonal.toString());
+            diagonal = new StringBuilder();
+            for (int j = 0; j < n - i; j++) {
+                diagonal.append(dna[j].charAt(n - j - 1 - i));
+            }
+            count += countSequences(diagonal.toString());
+        }
         return count >= 2; // Verificar si encontramos 2 o más secuencias
     }
 
