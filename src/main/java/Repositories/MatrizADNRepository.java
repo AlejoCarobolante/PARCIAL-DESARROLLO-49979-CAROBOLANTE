@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MatrizADNRepository extends JpaRepository<MatrizADN, Long> {
+    long countByEsmutante(boolean b);
 }

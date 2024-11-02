@@ -1,6 +1,7 @@
 package Services;
 
 import Entities.MatrizADN;
+import Ratio.Stats;
 import Repositories.MatrizADNRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ public class MatrizADNService {
 
     @Autowired
     private MatrizADNRepository matrizADNRepository;
+
+    private static int contadorMatrices = 0; // Contador de matrices añadidas
 
     // Constructor con inyección automática de dependencias
     public MatrizADNService(MatrizADNRepository matrizADNRepository) {
@@ -41,14 +44,16 @@ public class MatrizADNService {
     public Boolean guardarADN(String[] dna) throws Exception {
         boolean isMutant = isMutant(dna);
 
-        if (isMutant) {
-            MatrizADN matrizADN = MatrizADN.builder()
-                    .esmutante(true)                              // Indicar que es mutante
-                    .secuenciaValida(String.join(",", dna))       // Unir la secuencia ADN en un String
-                    .build();
-            matrizADNRepository.save(matrizADN);
-        }
-        // Si no es mutante, no guarda en la base de datos
+        MatrizADN matrizADN = MatrizADN.builder()
+                .secuenciaValida(String.join(",", dna)) // Unir la secuencia ADN en un String
+                .esmutante(isMutant)                      // Indicar si es mutante
+                .build();
+
+        matrizADNRepository.save(matrizADN); // Guardar la matriz en la base de datos
+        contadorMatrices++; // Incrementar el contador de matrices añadidas
+
+        System.out.println("Matriz añadida. Total matrices añadidas: " + contadorMatrices);
+
         return isMutant;
     }
 
@@ -97,7 +102,7 @@ public class MatrizADNService {
         return count >= 2; // Verificar si encontramos 2 o más secuencias
     }
 
-    // METODO PARA CONTAR LAS SECUENCIAS DE 4 LETRAS IGUALES
+    // Método para contar las secuencias de 4 letras iguales
     private static int countSequences(String sequence) {
         int count = 0;
         int currentCount = 1;
@@ -115,4 +120,17 @@ public class MatrizADNService {
         return count;
     }
 
+    // Método para obtener las estadísticas de mutantes y no mutantes
+    public Stats obtenerEstadisticas() {
+        long totalMutantes = matrizADNRepository.countByEsmutante(true);
+        long totalNoMutantes = matrizADNRepository.countByEsmutante(false);
+        double ratio = totalNoMutantes == 0 ? 0 : (double) totalMutantes / contadorMatrices;
+
+        return new Stats(totalMutantes, totalNoMutantes, ratio);
+    }
+
+    // Método para obtener el contador de matrices añadidas
+    public int getContadorMatrices() {
+        return contadorMatrices;
+    }
 }
